@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "question": "Яка мова програмування є основною для Android?",
+        "options": [
+            "Python",
+            "Kotlin",
+            "C++",
+            "PHP"
+        ],
+        "answer": "Kotlin"
+    },
+    {
+        "id": 2,
+        "question": "Який формат файлів ми використовуємо для збереження цих питань?",
+        "options": [
+            "TXT",
+            "XML",
+            "JSON",
+            "CSV"
+        ],
+        "answer": "JSON"
+    },
+    {
+        "id": 9,
+        "question": "45",
+        "options": [
+            "1",
+            "5",
+            "3",
+            "4"
+        ],
+        "answer": "4"
+    }
+]
