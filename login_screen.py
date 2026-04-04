@@ -2,30 +2,6 @@ import customtkinter as ctk
 from login import log, reg
 from all_styles import ENTRY_LABEL_STYLE, ENTRY_STYLE, MAIN_LABEL_STYLE, BUTTON_STYLE
 
-class App(ctk.CTk):
-    def __init__(self, fg_color = None, **kwargs):
-        super().__init__(fg_color, **kwargs)
-        self.title("Вхід")
-        self.geometry("500x600")
-
-        self.current_frame = None
-
-        self.show_login_frame()
-
-    def show_login_frame(self):
-        if self.current_frame is not None:
-            self.current_frame.destroy()
-
-        self.current_frame = LoginFrame(master=self, switch_callback=self.show_register_frame)
-        self.current_frame.place(rely=0.5, relx=0.5, anchor="center")       
-
-    def show_register_frame(self):
-        if self.current_frame is not None:
-            self.current_frame.destroy()
-
-        self.current_frame = RegistrationFrame(master=self, switch_callback=self.show_login_frame)
-        self.current_frame.place(rely=0.5, relx=0.5, anchor="center")
-
 class LoginFrame(ctk.CTkFrame):
     def __init__(self, master, switch_callback):
         super().__init__(master, fg_color="transparent")
@@ -95,10 +71,3 @@ class RegistrationFrame(ctk.CTkFrame):
 
 def on_label_click(self):
     print("Ви натиснули на лейбл")
-
-def start_app():
-    if __name__ == "__main__":
-        app = App()
-        app.mainloop()  
-
-start_app()

@@ -1,8 +1,9 @@
 import json
+import os
 
 file_path = "tests/question.json"
 
-#Функція завантаження тесту з файлу
+#Метод завантаження тесту з файлу
 def loadTest():
     try:
         with open(file_path, "r", encoding="utf-8") as file:
@@ -11,7 +12,7 @@ def loadTest():
         print(f"Помилка: Файл {file_path} не знайдено!")
         return []
 
-# Функція додавання питань до тесту
+# Метод додавання питань до тесту
 def editTest():
     try:
         with open(file_path, "r", encoding="utf-8") as file:
@@ -39,7 +40,7 @@ def editTest():
         print(f"Помилка: Файл {file_path} не знайдено!")
         return []        
 
-# Функція запуску тесту
+# Метод запуску тесту
 def runTest():
     questions = loadTest()
     score = 0
@@ -67,6 +68,16 @@ def runTest():
 
     print("--- Тест завершено ---")
     print(f"Ваш результат: {score} з {len(questions)}")
+    
+# Метод отримання даних з файлу
+def get_data(new_file):
+    if not os.path.exists(new_file) or os.path.getsize(new_file) == 0:
+        return []
+    with open(new_file, "r", encoding="utf-8") as file:
+        try:
+            return json.load(file)
+        except json.JSONDecodeError:
+            return []
 
 if __name__ == "__main__":
     #editTest()

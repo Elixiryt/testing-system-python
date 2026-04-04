@@ -2,3 +2,4 @@ __pycache__/
 .venv/
 .vscode/
 .tests/
+.test_frames_styles.py

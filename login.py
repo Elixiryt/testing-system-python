@@ -1,22 +1,11 @@
+from main import runTest, get_data
 import hashlib
 import json
-import os
-from main import runTest
 
 log_file = "logins.json"
 settings_file = "settings.json"
 
-# Метод отримання даних з файлу
-def get_data(new_file):
-    if not os.path.exists(log_file) or os.path.getsize(log_file) == 0:
-        return []
-    with open(new_file, "r", encoding="utf-8") as file:
-        try:
-            return json.load(file)
-        except json.JSONDecodeError:
-            return []
-
-# Функція логіну
+# Метод логіну
 def log(email, password):
     login_data = get_data(log_file)
     settings_data = get_data(settings_file)
