@@ -2,6 +2,7 @@ import json
 
 file_path = "tests/question.json"
 
+#Функція завантаження тесту з файлу
 def loadTest():
     try:
         with open(file_path, "r", encoding="utf-8") as file:
@@ -10,27 +11,35 @@ def loadTest():
         print(f"Помилка: Файл {file_path} не знайдено!")
         return []
 
+# Функція додавання питань до тесту
 def editTest():
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             data = json.load(file)
+
         new_question_number = int(input("Введіть кількість нових питань"))
         file_length = len(data)
+
         for i in range(new_question_number):
             question = input("Введіть питання")
             number_of_options = int(input("Введіть кількість варіантів відповідей"))
             options = []
+
             for i in range(number_of_options):
                 option = input(f"Введіть варіант відповіді №{i+1}")
                 options.append(option)
+
             answer = input("Введіть правильну відповідь")
             data.append({"id": file_length + i + 1, "question": question, "options": options, "answer": answer})
+
         with open(file_path, "w", encoding="utf-8") as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
+
     except FileNotFoundError:                
         print(f"Помилка: Файл {file_path} не знайдено!")
         return []        
 
+# Функція запуску тесту
 def runTest():
     questions = loadTest()
     score = 0
