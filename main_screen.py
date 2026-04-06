@@ -7,9 +7,11 @@ data = get_data("settings.json")
 
 # Це буде фрейм для гловного екрану
 class MainFrame(ctk.CTkScrollableFrame):
-    def __init__(self, master, switch_callback):
+    def __init__(self, master, app_manager):
         super().__init__(master, fg_color="transparent", width=800, height=600)
         self.pack_propagate=False
+        
+        self.app_manager = app_manager
 
         # Цьо хеадер
         self.header = ctk.CTkFrame(self, height=60, corner_radius=0, fg_color=FRAME_BG_COLOR)

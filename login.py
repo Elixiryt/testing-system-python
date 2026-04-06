@@ -6,7 +6,7 @@ log_file = "logins.json"
 settings_file = "settings.json"
 
 # Метод логіну
-def log(email, password):
+def login(email, password):
     login_data = get_data(log_file)
     settings_data = get_data(settings_file)
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
@@ -26,7 +26,7 @@ def log(email, password):
             with open(settings_file, "w", encoding="utf-8") as f:
                 json.dump(settings_data, f, ensure_ascii=False, indent=4)
                 
-            runTest()
+            return True
         else:
             return "Неправильний пароль"
     else:

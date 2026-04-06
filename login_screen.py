@@ -1,11 +1,13 @@
 import customtkinter as ctk
-from login import log, reg
+from login import login, reg
 from all_styles import ENTRY_LABEL_STYLE, ENTRY_STYLE, MAIN_LABEL_STYLE, BUTTON_STYLE
 
 class LoginFrame(ctk.CTkFrame):
-    def __init__(self, master, switch_callback):
+    def __init__(self, master, app_manager):
         super().__init__(master, fg_color="transparent")
        
+        self.app_manager = app_manager
+              
         #робимо кнопки да надписи та додаємо їх в фрейм
         self.main_label = ctk.CTkLabel(self, text="Вітаємо у тестуванні!", **MAIN_LABEL_STYLE)
         self.main_label.pack(pady=(0, 20))
@@ -22,13 +24,20 @@ class LoginFrame(ctk.CTkFrame):
 
         self.registration_label = ctk.CTkLabel(self, width=150, text="Немаєте аккаунта?", text_color="blue")
         self.registration_label.pack()
-        self.registration_label.bind("<Button-1>", lambda e: switch_callback())
+        self.registration_label.bind("<Button-1>", lambda e: app_manager())
 
         self.login_button = ctk.CTkButton(self,
                                           **BUTTON_STYLE,
                                           text="Увійти",
-                                          command=lambda: log(self.email_entry.get(), self.password_entry.get()))
+                                          command=lambda: self.log(self.email_entry.get(), self.password_entry.get(),))
         self.login_button.pack(pady=10)
+        
+    def log(self, email, password):
+        if login(email, password):
+            from main_screen import MainFrame
+            self.app_manager.switch_frame(MainFrame)
+        else:
+            print("Користувач не залогінений")
 
 class RegistrationFrame(ctk.CTkFrame):
     def __init__(self, master, switch_callback):
@@ -71,3 +80,16 @@ class RegistrationFrame(ctk.CTkFrame):
 
 def on_label_click(self):
     print("Ви натиснули на лейбл")
+    
+if __name__ == "__main__":
+    # Цей код виконається ТІЛЬКИ якщо ти запустиш цей файл напряму
+    root = ctk.CTk()
+    
+    class FakeManager:
+        def switch_frame(self, frame_class):
+            print(f"Хочу запустити фрейм {frame_class}")
+
+    frame = LoginFrame(master=root, app_manager=FakeManager())
+    frame.pack(expand=True, fill="both")
+    
+    root.mainloop()

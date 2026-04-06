@@ -1,5 +1,5 @@
-from main_screen import MainFrame, TestingFrame
-from login_screen import LoginFrame, RegistrationFrame
+from main_screen import MainFrame
+from login_screen import LoginFrame
 from main import get_data
 import customtkinter as ctk
 
@@ -15,45 +15,22 @@ class App(ctk.CTk):
         
         self.check_auth()
         
+    def switch_frame(self, frame_class):
+        if self.current_frame is not None:
+            self.current_frame.destroy()
+
+        self.current_frame = frame_class(master=self, app_manager=self)
+        self.current_frame.pack(expand=True, fill="both")
+        
     def check_auth(self):
         settings_data = get_data("settings.json")
         
         if settings_data["isLogged"]:
             print(f"Користувач {settings_data["userName"]} залогінений")
+            self.switch_frame(MainFrame)
         else: 
             print("Користувач не залогінений")
-    
-    # Метод переключення фрейму на фрейм тестів
-    def show_main_frame(self):
-        if self.current_frame is not None:
-            self.current_frame.destroy
-
-        self.current_frame = MainFrame(master=self, switch_callback=self.show_testing_frame)
-        self.current_frame.place(relx=0.5, rely=0.5, anchor="center", relwidth=1, relheight=1)
-
-    # Метод переключення фрейму на головний фрейм
-    def show_testing_frame(self):
-        if self.current_frame is not None:
-            self.current_frame.destroy
-
-        self.current_frame = TestingFrame(master=self, switch_callback=self.show_main_frame)
-        self.current_frame.place(relx=0.5, rely=0.5, anchor="center")
-     
-    # Метод переключення фрейму на логін    
-    def show_login_frame(self):
-        if self.current_frame is not None:
-            self.current_frame.destroy()
-
-        self.current_frame = LoginFrame(master=self, switch_callback=self.show_register_frame)
-        self.current_frame.place(rely=0.5, relx=0.5, anchor="center")       
-
-    # Метод переключення фрейму на регістрацію
-    def show_register_frame(self):
-        if self.current_frame is not None:
-            self.current_frame.destroy()
-
-        self.current_frame = RegistrationFrame(master=self, switch_callback=self.show_login_frame)
-        self.current_frame.place(rely=0.5, relx=0.5, anchor="center")
+            self.switch_frame(LoginFrame)
         
 def start_app():
     if __name__ == "__main__":
