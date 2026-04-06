@@ -39,3 +39,8 @@ BUTTON_STYLE = {
     "hover_color": "#14507A" # Темніший синій при наведенні
 }
 
+BACK_BUTTON_STYLE = {
+    "width": 30,
+    "fg_color": "transparent",
+    "text": "<"
+}

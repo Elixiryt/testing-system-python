@@ -33,11 +33,14 @@ def login(email, password):
         return "Користувача з такою поштою не знайдено"
 
 # Пишемо метод регістрації
-def reg(name, email, password, repeated_password):    
+def register(name, email, password, repeated_password):    
     dataW = get_data()
 
     if any(user["email"] == email for user in dataW):
         return "Користувач з цією поштою вже існує"
+    
+    elif len(password)<8:
+        return "Мінімальна довжина паролю 8 символів"
     
     elif repeated_password != password:
         return "Паролі не збігаються"

@@ -1,7 +1,6 @@
 import customtkinter as ctk
 from all_styles import MAIN_LABEL_STYLE, SECTION_LABEL_STYLE, FRAME_BG_COLOR
 from login import get_data
-import json
    
 data = get_data("settings.json")
 
