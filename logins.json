@@ -3,5 +3,15 @@
         "email": "jsoin",
         "name": "joe",
         "password": "02bd175f329720378ce83dd56a1b6b1f5291a60182d6c54b5e0d1e8d248a267a"
+    },
+    {
+        "email": "mamkinhackeryt@gmail.com",
+        "name": "Снітко Ілля",
+        "password": "485ef190bc9b99e4f146fa47da1d4579e480516c2a84855ed2bd6257333c677d"
+    },
+    {
+        "email": "ava@gmail.com",
+        "name": "gwreas",
+        "password": "a3dd2745227f3b86aab97a0526d3b6ce4c8e163503ef5c8e7a6aa0379b7c366c"
     }
 ]

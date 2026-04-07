@@ -79,9 +79,6 @@ def get_data(new_file):
             return json.load(file)
         except json.JSONDecodeError:
             return []
-
-if __name__ == "__main__":
-    runTest()
     
 #  Метод для перевірки на email
 def is_valid_email(email):
@@ -100,25 +97,38 @@ def enable_email_verification(entry_widget):
             entry_widget.configure(border_color="red")
     entry_widget.bind("<KeyRelease>", validate)
     
+# Для створення рандомної послідовності з 6 цифр
 def generate_secure_code(lenght=6):
     return ''.join(random.choices(string.digits, k=lenght))
 
-def find_user_by_email(email):
+# Пошук користувача за поштою
+def find_user_by_email(user_email):
     users = get_data(login_file)
-    return email in users
+    for user in users:
+        if user.get("email") == user_email:
+            return True
+    return False
 
+# Зміна паролю
 def update_password(email, new_password):
+    users = get_data(login_file)
     hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
-    with open(login_file, "r+", encoding="utf-8") as f:
-        users = json.load(f)
-        users[email]["password"] = hashed_password
-        f.seek(0)
-        json.dump(users, f, indent=4)
-        f.truncate()
 
-def show_password(entry_widget):
-    print("хз")
-    
+    user_found = None
+    for user in users:
+        if user.get("email") == email:
+            user["password"] = hashed_password
+            user_found = True
+            break
+        
+    if user_found:
+        with open(login_file, "w", encoding="utf-8") as f:
+            json.dump(users, f, indent=4, ensure_ascii=False)
+            print(f"Пароль для користувача {email} успішно змінений")
+    else:
+        print("Помилка: Користувача не знайдено при оновленні")
+        
+# Вислати ел. листа
 def send_email(subject, body, to_email):
     sender_email = "isnitko@lpc.ukr.education"
     sender_password = "wekk hwxr nbxm wwhj"
@@ -130,7 +140,7 @@ def send_email(subject, body, to_email):
     msg["To"] = to_email
     
     try:
-        with smtplib.SMTP_SSL("smpt@gmail.com", 465) as smtp:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
             smtp.login(sender_email, sender_password)
             smtp.send_message(msg)
     except Exception as e:

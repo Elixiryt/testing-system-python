@@ -1,4 +1,4 @@
-from main import runTest, get_data
+from main import get_data
 import hashlib
 import json
 
@@ -23,18 +23,21 @@ def login(email, password):
             settings_data["userName"] = user_found["name"]
             settings_data["isLogged"] = True
             
+            print("Налаштування збережені")
+            
             with open(settings_file, "w", encoding="utf-8") as f:
                 json.dump(settings_data, f, ensure_ascii=False, indent=4)
                 
             return True
         else:
-            return "Неправильний пароль"
+            print("Неправильний пароль")
+            return False
     else:
-        return "Користувача з такою поштою не знайдено"
+        print("Користувача з такою поштою не знайдено")
 
 # Пишемо метод регістрації
-def register(name, email, password, repeated_password):    
-    dataW = get_data()
+def register_user(name, email, password, repeated_password):    
+    dataW = get_data(log_file)
 
     if any(user["email"] == email for user in dataW):
         return "Користувач з цією поштою вже існує"
