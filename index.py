@@ -14,16 +14,20 @@ class App(ctk.CTk):
         self.current_frame = None
         
         self.check_auth()
-        
-    def switch_frame(self, frame_class):
-        if self.current_frame is not None:
-            self.current_frame.destroy()
 
-        self.current_frame = frame_class(master=self, app_manager=self)
-        self.current_frame.pack(expand=True, fill="both")
+    def switch_frame(self, frame_class, **kwargs):
+        for child in self.winfo_children():
+            child.destroy()
+
+        try:
+            self.current_frame = frame_class(master=self, app_manager=self, **kwargs)
+            self.current_frame.pack(expand=True, fill="both")
+            self.update_idletasks()
+        except Exception as e:
+            print(f"Не вдалось створити фрейм: {e}")
         
     def check_auth(self):
-        settings_data = get_data("settings.json")
+        settings_data = get_data("files/settings.json")
         
         if settings_data["isLogged"]:
             print(f"Користувач {settings_data["userName"]} залогінений")

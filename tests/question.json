@@ -1,35 +1,27 @@
-[
+{
+  "info": {
+    "title": "Мій тест",
+    "creator": "Iлля Снітко",
+    "description": "Перший тест в цій програмі",
+    "max_score": 40
+  },
+  "questions": [
     {
-        "id": 1,
-        "question": "Яка мова програмування є основною для Android?",
-        "options": [
-            "Python",
-            "Kotlin",
-            "C++",
-            "PHP"
-        ],
-        "answer": "Kotlin"
+      "type": "radio",
+      "question": "Скільки буде 2+2?",
+      "options": ["3", "4", "5"],
+      "answer": "4"
     },
     {
-        "id": 2,
-        "question": "Який формат файлів ми використовуємо для збереження цих питань?",
-        "options": [
-            "TXT",
-            "XML",
-            "JSON",
-            "CSV"
-        ],
-        "answer": "JSON"
+      "type": "checkbox",
+      "question": "Виберіть Linux дистрибутиви:",
+      "options": ["Arch", "Ubuntu", "Windows", "Fedora"],
+      "answer": ["Arch", "Ubuntu", "Fedora"]
     },
     {
-        "id": 9,
-        "question": "45",
-        "options": [
-            "1",
-            "5",
-            "3",
-            "4"
-        ],
-        "answer": "4"
+      "type": "text",
+      "question": "Як називається твоя ОС?",
+      "answer": "CachyOS"
     }
-]
+  ]
+}

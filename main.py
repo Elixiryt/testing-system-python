@@ -1,8 +1,9 @@
 import re, random, string, json, os, hashlib, smtplib
 from email.message import EmailMessage
+from datetime import datetime
 
 file_path = "tests/question.json"
-login_file = "logins.json"
+login_file = "files/logins.json"
 
 #Метод завантаження тесту з файлу
 def loadTest():
@@ -145,3 +146,61 @@ def send_email(subject, body, to_email):
             smtp.send_message(msg)
     except Exception as e:
         print(f"Помилка при відправці{e}")
+        
+# Метод для створення списку з наявними тестами
+def get_test_files():
+    folder_path = "tests"
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        return []
+    
+    return [f for f in os.listdir(folder_path) if f.endswith(".json")]
+
+# Метод для завантаження метаданих тесту
+def get_test_metadata(filename):
+    path = os.path.join("tests", filename)
+    try:
+        data = get_data(path)
+        
+        # Перевіряємо, чи отримані дані є словником
+        if isinstance(data, dict):
+            info = data.get("info", {})
+            return {
+                "filename": filename,
+                "title": info.get("title", filename.replace(".json", "")),
+                "creator": info.get("creator", "Aнонім"),
+                "description": info.get("description", ""),
+                "max_score": info.get("max_score", 12)
+            }
+        
+        # Якщо це список (просто питання без метаданих)
+        elif isinstance(data, list):
+            return {
+                "filename": filename,
+                "title": filename.replace(".json", ""), # Назва - це ім'я файлу
+                "creator": "Невідомий (JSON-list)",
+                "description": "Метадані відсутні у списку",
+                "max_score": 12
+            }
+            
+    except Exception as e:
+        # Тепер ми побачимо, якщо вилетить щось інше
+        print(f"Помилка в метаданих для {filename}: {e}")
+        return None
+    
+def save_history(test_title, score, max_score, percentage):
+    history_file = "files/history.json"
+
+    new_entry = {
+        "test": test_title,
+        "score": f"{score}/{max_score}",
+        "percentage": f"{percentage}%",
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+    
+    history = get_data(history_file)
+
+    history.append(new_entry)
+    
+    with open(history_file, "w", encoding="utf-8") as f:
+        json.dump(history, f, ensure_ascii=False, indent=4)
