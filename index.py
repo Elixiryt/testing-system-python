@@ -13,6 +13,9 @@ class App(ctk.CTk):
 
         self.current_frame = None
         
+        settings_data=get_data("files/settings.json")
+        ctk.set_appearance_mode(settings_data["darkMode"])
+        
         self.check_auth()
 
     def switch_frame(self, frame_class, **kwargs):

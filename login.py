@@ -2,8 +2,8 @@ from main import get_data
 import hashlib
 import json
 
-log_file = "logins.json"
-settings_file = "settings.json"
+log_file = "files/logins.json"
+settings_file = "files/settings.json"
 
 # Метод логіну
 def login(email, password):

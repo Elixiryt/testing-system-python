@@ -193,8 +193,8 @@ def save_history(test_title, score, max_score, percentage):
 
     new_entry = {
         "test": test_title,
-        "score": f"{score}/{max_score}",
-        "percentage": f"{percentage}%",
+        "score": f"{score:.0f}/{max_score}",
+        "percentage": f"{percentage:.1f}%",
         "date": datetime.now().strftime("%Y-%m-%d %H:%M")
     }
     
@@ -204,3 +204,15 @@ def save_history(test_title, score, max_score, percentage):
     
     with open(history_file, "w", encoding="utf-8") as f:
         json.dump(history, f, ensure_ascii=False, indent=4)
+        
+def set_latest_attempt():
+    data_all = get_data("files/history.json")
+    data = data_all[-1]
+
+    if data:
+        return f"Остання спроба: {data["test"]} - {data["score"]}({data["percentage"]})"
+    else:
+        return "Ви ще не проходили тест"
+    
+def get_hash(data):
+    return hashlib.sha256(data.encode()).hexdigest()

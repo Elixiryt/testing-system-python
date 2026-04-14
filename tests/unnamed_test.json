@@ -1,0 +1,20 @@
+{
+    "info": {
+        "title": "Математика",
+        "creator": "Ілля Снітко",
+        "max_score": 12
+    },
+    "questions": [
+        {
+            "type": "checkbox",
+            "question": "|2|",
+            "options": [
+                "2",
+                "-2",
+                "1",
+                "-1"
+            ],
+            "answer": "33f88a451fd4154fa54953c60636b671cf82ce1228f40c8692e1d985912155ac"
+        }
+    ]
+}

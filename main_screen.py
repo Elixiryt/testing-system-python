@@ -1,15 +1,15 @@
 import customtkinter as ctk
 import os, json
-from all_styles import MAIN_LABEL_STYLE, SECTION_LABEL_STYLE, FRAME_BG_COLOR, BACK_BUTTON_STYLE, BUTTON_STYLE, HEADER_STYLE
+from all_styles import MAIN_LABEL_STYLE, BORDER_COLOR, FRAME_BG_COLOR, BACK_BUTTON_STYLE, BUTTON_STYLE, HEADER_STYLE, BG_COLOR, TEXT_SECONDARY, TABLE_SECONDARY, BUTTON_STYLE_WITHOUT_COLOR
 from login import get_data
-from main import get_test_files, get_test_metadata, save_history
+from main import get_test_files, get_test_metadata, save_history, set_latest_attempt, get_hash
 
 settings_data = get_data("files/settings.json")
 
 # Це буде фрейм для гловного екрану
 class MainFrame(ctk.CTkScrollableFrame):
     def __init__(self, master, app_manager):
-        super().__init__(master, fg_color="transparent")
+        super().__init__(master, fg_color=BG_COLOR)
         
         self.app_manager = app_manager
 
@@ -29,7 +29,7 @@ class MainFrame(ctk.CTkScrollableFrame):
         self.footer.pack(side="bottom", fill="x")
         self.footer.pack_propagate(False)
 
-        self.footer_label = ctk.CTkLabel(self.footer, text="Курсова робота | Снітко Ілля | Версія 1.0", **SECTION_LABEL_STYLE)
+        self.footer_label = ctk.CTkLabel(self.footer, text="Курсова робота | Снітко Ілля | Версія 1.0", text_color=TEXT_SECONDARY, font=("Arial", 16))
         self.footer_label.pack(side="left", padx=20)
         
         # Цьо головний блок
@@ -40,7 +40,7 @@ class MainFrame(ctk.CTkScrollableFrame):
         self.main_label.pack(side="top", anchor="w", pady=(40, 5), padx=40)
         
         # Тут треба додати підв'язку останньої спроби(напевне через функцію)
-        self.last_attempt_label = ctk.CTkLabel(self.main, text="Остання спроба:", **SECTION_LABEL_STYLE)
+        self.last_attempt_label = ctk.CTkLabel(self.main, text=set_latest_attempt(), text_color=TEXT_SECONDARY)
         self.last_attempt_label.pack(side="top", anchor="w", pady=(0, 40), padx=40)
         
         self.grid = ctk.CTkFrame(self.main, fg_color="transparent")
@@ -60,7 +60,7 @@ class MainFrame(ctk.CTkScrollableFrame):
             "🛠️",
             "КОНСТРУКТОР",
             "Створити власний тест",
-            self.btn_click,
+            lambda: self.app_manager.switch_frame(ConstructorFrame),
             0, 1)
         self.btn_history = self.create_card(
             self.grid,
@@ -74,7 +74,7 @@ class MainFrame(ctk.CTkScrollableFrame):
             "⚙️",
             "НАЛАШТУВАННЯ",
             "Налаштувати клієнту тестів від Снітка",
-            self.btn_click,
+            lambda: self.app_manager.switch_frame(SettingsFrame),
             1, 1)
 
         self.bind_all("<Button-4>", self.on_mouse_wheel)
@@ -117,7 +117,7 @@ class MainFrame(ctk.CTkScrollableFrame):
 #Це буде фрейм для екрану списку тестів
 class TestsListFrame(ctk.CTkFrame):
     def __init__(self, master, app_manager):
-        super().__init__(master, fg_color="transparent")
+        super().__init__(master, fg_color=BG_COLOR)
         self.app_manager = app_manager
         
         # Робим хеадер
@@ -155,7 +155,7 @@ class TestsListFrame(ctk.CTkFrame):
                 continue
             
             # Елесент списку
-            list_chunk = ctk.CTkFrame(self.container, height=80, corner_radius=20, fg_color="#1c1c1c")
+            list_chunk = ctk.CTkFrame(self.container, height=80, corner_radius=20, fg_color=FRAME_BG_COLOR)
             list_chunk.pack(fill="x", pady=5, padx=20)
             list_chunk.pack_propagate(False)
             
@@ -177,7 +177,7 @@ class TestsListFrame(ctk.CTkFrame):
 # Фрейм тестування
 class TestingFrame(ctk.CTkFrame):
     def __init__(self, master, app_manager, test_file):
-        super().__init__(master, fg_color="transparent")
+        super().__init__(master, fg_color=BG_COLOR)
         self.app_manager = app_manager
         self.test_file = test_file
         
@@ -301,17 +301,27 @@ class TestingFrame(ctk.CTkFrame):
         total_score = 0
         for i, q in enumerate(self.questions):
             user_value = self.user_answers.get(i)
-            correct_value = q.get("answer")
+            stored_hash = q.get("answer")
 
-            if user_value is None: continue
+            if user_value is None:
+                continue
 
             if q["type"] == "checkbox":
-                if isinstance(user_value, list) and sorted(user_value) == sorted(correct_value):
+                if isinstance(user_value, list):
+                    # ПРАВКА: приводимо кожен вибраний варіант до нижнього регістру перед сортуванням
+                    normalized_user = sorted([str(opt).strip().lower() for opt in user_value])
+                    user_hash = get_hash("".join(normalized_user))
+                    
+                    if user_hash == stored_hash:
+                        total_score += 1
+            else:
+                # Для radio та text: теж обов'язково .lower()
+                user_hash = get_hash(str(user_value).strip().lower())
+                if user_hash == stored_hash:
                     total_score += 1
-            elif str(user_value).strip().lower() == str(correct_value).strip().lower():
-                total_score += 1
+                
         return total_score
-    
+
     def show_results(self):
         # 1. Повне очищення
         for child in self.question_container.winfo_children():
@@ -320,7 +330,8 @@ class TestingFrame(ctk.CTkFrame):
             self.footer.destroy()
 
         total = len(self.questions)
-        if total == 0: return
+        if total == 0: 
+            return
 
         final_score = self.calculate_score()
         info = self.test_data.get("info", {})
@@ -331,11 +342,11 @@ class TestingFrame(ctk.CTkFrame):
         percents = (final_score / total) * 100
         
         if percents >= 90:
-            result_color = "#2ecc71"; comment = "Відмінно! Справжній Arch-майстер."
+            result_color = "#2ecc71"; comment = "Відмінно!"
         elif percents >= 60:
             result_color = "#3498db"; comment = "Гарний результат"
         else:
-            result_color = "#e74c3c"; comment = "Погано. Треба більше практики."
+            result_color = "#e74c3c"; comment = "Погано."
 
         self.progress_bar.set(1.0)
         
@@ -359,7 +370,7 @@ class TestingFrame(ctk.CTkFrame):
 
 class HistoryFrame(ctk.CTkFrame):
     def __init__(self, master, app_manager):
-        super().__init__(master, fg_color="transparent")
+        super().__init__(master, fg_color=BG_COLOR)
         self.app_manager = app_manager
         
         self.header = ctk.CTkFrame(self, fg_color="transparent", height=60)
@@ -392,7 +403,7 @@ class HistoryFrame(ctk.CTkFrame):
 
     def create_table_header(self):
         # Фрейм для заголовків стовпців (колір трохи світліший за фон)
-        header_frame = ctk.CTkFrame(self, fg_color="#2b2b2b", height=40)
+        header_frame = ctk.CTkFrame(self, fg_color=FRAME_BG_COLOR, height=40)
         header_frame.pack(fill="x", padx=20, pady=(10, 0))
         header_frame.pack_propagate(False)
 
@@ -418,7 +429,7 @@ class HistoryFrame(ctk.CTkFrame):
 
         # Виводимо кожен запис як рядок таблиці
         for i, entry in enumerate(reversed(history)): # Нові результати зверху
-            row_color = "#1c1c1c" if i % 2 == 0 else "transparent" # Зебра для зручності
+            row_color = TABLE_SECONDARY if i % 2 == 0 else "transparent" # Зебра для зручності
             
             row_frame = ctk.CTkFrame(self.scroll_container, fg_color=row_color, height=45, corner_radius=0)
             row_frame.pack(fill="x")
@@ -435,4 +446,245 @@ class HistoryFrame(ctk.CTkFrame):
             # Результат (з виділенням кольором)
             ctk.CTkLabel(row_frame, text=entry["score"], font=("Arial", 14, "bold"), text_color="#3b8ed0").grid(row=0, column=2, sticky="w")
             # Відсоток
-            ctk.CTkLabel(row_frame, text=entry["percentage"], font=("Arial", 14), text_color="gray").grid(row=0, column=3, sticky="w")            
+            ctk.CTkLabel(row_frame, text=entry["percentage"], font=("Arial", 14), text_color="gray").grid(row=0, column=3, sticky="w")
+            
+class ConstructorFrame(ctk.CTkFrame):
+    def __init__(self, master, app_manager):
+        super().__init__(master, fg_color=BG_COLOR)
+        self.app_manager = app_manager
+        self.questions_list = []
+
+        self.setup_header()
+        self.setup_footer()
+        
+        self.main_container = ctk.CTkFrame(self, fg_color="transparent")
+        self.main_container.pack(fill="both", expand=True, padx=20, pady=20)
+        self.main_container.grid_columnconfigure(0, weight=1)
+        self.main_container.grid_columnconfigure(1, weight=1)
+        self.main_container.grid_rowconfigure(0, weight=1)
+
+        self.setup_editor_panel()
+        self.setup_preview_panel()
+        self.update_live_preview()
+
+    def setup_header(self):
+        self.header = ctk.CTkFrame(self, fg_color=FRAME_BG_COLOR, height=60)
+        self.header.pack(side="top", fill="x")
+        self.header.pack_propagate(False)
+        
+        self.back_button = ctk.CTkButton(self.header, command=lambda: self.app_manager.switch_frame(MainFrame), **BACK_BUTTON_STYLE)
+        self.back_button.place(rely=0.25, relx=0.01)
+        
+        self.entry_title = ctk.CTkEntry(self.header, placeholder_text="Назва тесту", width=300)
+        self.entry_title.pack(side="left", padx=(60, 20))
+        
+        self.entry_max_score = ctk.CTkEntry(self.header, placeholder_text="Максимальна кількість балів", width=200)
+        self.entry_max_score.pack(side="left")
+        self.entry_max_score.bind("<KeyRelease>", self.validate_int)
+
+    def setup_footer(self):
+        self.footer = ctk.CTkFrame(self, fg_color=FRAME_BG_COLOR, height=60)
+        self.footer.pack(side="bottom", fill="x")
+        self.footer.pack_propagate(False)
+
+        self.save_button = ctk.CTkButton(self.footer, text="Зберегти тест", fg_color="#2ecc71", hover_color="#27ae60", command=self.save_test_to_file, **BUTTON_STYLE_WITHOUT_COLOR)
+        self.save_button.pack(side="right", padx=40)
+
+        self.cancel_button = ctk.CTkButton(self.footer, text="Скасувати", fg_color="#e74c3c", hover_color="#c0392b", command=lambda: self.app_manager.switch_frame(MainFrame), **BUTTON_STYLE_WITHOUT_COLOR)
+        self.cancel_button.pack(side="right", padx=10)
+
+    def setup_editor_panel(self):
+        self.editor_panel = ctk.CTkScrollableFrame(self.main_container, fg_color=FRAME_BG_COLOR, corner_radius=10)
+        self.editor_panel.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
+
+        ctk.CTkLabel(self.editor_panel, text="Редактор питання", font=("Arial", 20, "bold")).pack(pady=15)
+
+        ctk.CTkLabel(self.editor_panel, text="Текст питання:").pack(anchor="w", padx=20)
+        self.entry_q_text = ctk.CTkEntry(self.editor_panel, placeholder_text="Введіть питання...")
+        self.entry_q_text.pack(fill="x", padx=20, pady=(0, 5))
+        self.entry_q_text.bind("<KeyRelease>", lambda e: self.update_live_preview())
+
+        ctk.CTkLabel(self.editor_panel, text="Тип:").pack(anchor="w", padx=20)
+        self.type_var = ctk.StringVar(value="radio")
+        self.type_menu = ctk.CTkOptionMenu(self.editor_panel, values=["radio", "checkbox", "text"], variable=self.type_var, command= self.on_type_change)
+        self.type_menu.pack(fill="x", padx=20, pady=(0, 5))
+
+        self.label_options = ctk.CTkLabel(self.editor_panel, text="Варіанти (через кому):")
+        self.label_options.pack(anchor="w", padx=20)
+        self.entry_options = ctk.CTkEntry(self.editor_panel, placeholder_text="Варіант 1, Варіант 2, Варіант 3")
+        self.entry_options.pack(fill="x", padx=20, pady=(0, 5))
+        self.entry_options.bind("<KeyRelease>", lambda e: self.update_live_preview())
+
+        ctk.CTkLabel(self.editor_panel, text="Правильна відповідь:",).pack(anchor="w", padx=(20))
+        self.entry_correct = ctk.CTkEntry(self.editor_panel, placeholder_text="Відповідь")
+        self.entry_correct.pack(fill="x", padx=20, pady=(0, 5))
+
+        self.add_btn = ctk.CTkButton(self.editor_panel, text="Додати питання", command=self.add_question_to_list, **BUTTON_STYLE)
+        self.add_btn.pack(pady=20)
+
+    def setup_preview_panel(self):
+        self.preview_panel = ctk.CTkFrame(self.main_container, fg_color=FRAME_BG_COLOR, corner_radius=10)
+        self.preview_panel.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
+        
+        ctk.CTkLabel(self.preview_panel, text="LIVE PREVIEW", font=("Arial", 12), text_color="gray").pack(pady=10)
+
+        self.preview_question_label = ctk.CTkLabel(self.preview_panel, text="", font=("Arial", 22, "bold"), wraplength=400)
+        self.preview_question_label.pack(pady=30, padx=20)
+
+        self.preview_options_container = ctk.CTkFrame(self.preview_panel, fg_color="transparent")
+        self.preview_options_container.pack(fill="both", expand=True)
+
+    def update_live_preview(self):
+        for child in self.preview_options_container.winfo_children():
+            child.destroy()
+
+        q_text = self.entry_q_text.get().strip()
+        q_type = self.type_var.get()
+        raw_opts = self.entry_options.get()
+        options = [opt.strip() for opt in raw_opts.split(",")] if raw_opts else []
+
+        if not q_text:
+            self.preview_question_label.configure(text="[Текст питання з'явиться тут]")
+        else:
+            self.preview_question_label.configure(text=q_text)
+
+        if q_type == "radio":
+            self.entry_correct.configure(placeholder_text="Відповідь")
+            for opt in options:
+                ctk.CTkRadioButton(self.preview_options_container, text=opt).pack(pady=5, anchor="w", padx=60)
+        elif q_type == "checkbox":
+            self.entry_correct.configure(placeholder_text="Відповідь, відповідь...")
+            for opt in options:
+                ctk.CTkCheckBox(self.preview_options_container, text=opt).pack(pady=5, anchor="w", padx=60)
+        elif q_type == "text":
+            self.entry_correct.configure(placeholder_text="Відповідь")
+            entry = ctk.CTkEntry(self.preview_options_container, width=300, placeholder_text="Поле для відповіді...")
+            entry.configure(state="disabled")
+            entry.pack(pady=20)
+
+    def add_question_to_list(self):
+        q_text = self.entry_q_text.get().strip()
+        q_type = self.type_var.get()
+        correct = self.entry_correct.get().strip()
+
+        if q_type == "checkbox":
+            list_correct = [c.strip().lower() for c in correct.split(",")]
+            hashed_answer = get_hash("".join(sorted(list_correct)))
+        else:
+            # Для radio та text
+            hashed_answer = get_hash(correct.lower())
+
+        question_data = {
+            "type": q_type,
+            "question": q_text,
+            "options": [opt.strip() for opt in self.entry_options.get().split(",")],
+            "answer": hashed_answer # Зберігаємо вже готовий хеш
+        }
+        self.questions_list.append(question_data)
+        
+        self.entry_q_text.delete(0, 'end')
+        self.entry_options.delete(0, 'end')
+        self.entry_correct.delete(0, 'end')
+
+    def save_test_to_file(self):
+        title = self.entry_title.get().strip() or "unnamed_test"
+        en_max = self.entry_max_score.get()
+        if en_max:
+            max_score = int(en_max)
+        else:
+            max_score = 12
+        
+        full_data = {
+            "info": {
+                "title": title,
+                "creator": "Ілля Снітко",
+                "max_score": max_score
+            },
+            "questions": self.questions_list
+        }
+
+        if not os.path.exists("tests"):
+            os.makedirs("tests")
+
+        filename = f"tests/{title.lower().replace(' ', '_')}.json"
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(full_data, f, ensure_ascii=False, indent=4)
+        
+        self.app_manager.switch_frame(MainFrame)
+        
+    def validate_int(self, event):
+        current_value = self.entry_max_score.get()
+
+        if current_value=="" or current_value.isdigit():
+            self.entry_max_score.configure(border_color=BORDER_COLOR)
+        else:
+            self.entry_max_score.configure(border_color="red")
+            
+    def on_type_change(self, choice):
+        if choice == "text":
+            self.label_options.pack_forget()
+            self.entry_options.pack_forget()
+        else:
+            self.label_options.pack(after=self.type_menu ,anchor="w", padx=20)
+            self.entry_options.pack(after=self.label_options, fill="x", padx=20, pady=(0, 5))
+        
+        self.update_live_preview()
+                
+class SettingsFrame(ctk.CTkFrame):
+    def __init__(self, master, app_manager):
+        super().__init__(master, fg_color=BG_COLOR)
+        self.app_manager=app_manager
+        
+        self.header = ctk.CTkFrame(self, fg_color=FRAME_BG_COLOR, height=60)
+        self.header.pack(side="top", fill="x")
+        self.header.pack_propagate(False)
+
+        self.back_button = ctk.CTkButton(self.header, command=lambda: self.app_manager.switch_frame(MainFrame), **BACK_BUTTON_STYLE)
+        self.back_button.place(relx=0.01, rely=0.25, anchor="nw")
+
+        self.main_label = ctk.CTkLabel(self.header, text="Налаштування", **MAIN_LABEL_STYLE)
+        self.main_label.pack(side="left", padx=60)
+        
+        self.theme_container = ctk.CTkFrame(self, height=40, fg_color="transparent")
+        self.theme_container.pack(pady=(40, 5), padx=100)
+        
+        self.theme_label = ctk.CTkLabel(self.theme_container, font=("Arial", 16), text="Тема")
+        self.theme_label.pack(padx=40, side="left")
+
+        self.theme_segment_menu = ctk.CTkSegmentedButton(self.theme_container, values=["System", "Light", "Dark"], command=self.change_theme)
+        self.theme_segment_menu.pack(side="right", padx=40)
+        self.theme_segment_menu.set(ctk.get_appearance_mode())
+        
+        self.log_out_button = ctk.CTkButton(self, text="Вийти з акаунта", command=self.log_out, **BUTTON_STYLE)
+        self.log_out_button.pack(pady=40)
+        
+        self.footer = ctk.CTkFrame(self, height=60, corner_radius=0, fg_color=FRAME_BG_COLOR)
+        self.footer.pack(side="bottom", fill="x")
+        self.footer.pack_propagate(False)
+
+        self.footer_label = ctk.CTkLabel(self.footer, text="Курсова робота | Снітко Ілля | Версія 1.0", text_color=TEXT_SECONDARY, font=("Arial", 16))
+        self.footer_label.pack(side="left", padx=20)
+        
+        self.restart_label = ctk.CTkLabel(self, text="", text_color="red", font=("Arial", 24, "bold"))
+        self.restart_label.pack(side="bottom", pady=40)
+        
+    def log_out(self):
+        from login_screen import LoginFrame
+        self.app_manager.switch_frame(LoginFrame)
+
+        data = get_data("files/settings.json")
+
+        data["isLogged"] = False
+        data["userName"] = ""
+
+        with open("files/settings.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+
+    def change_theme(self, new_theme):
+        ctk.set_appearance_mode(new_theme)
+
+        data= get_data("files/settings.json")
+        data["darkMode"] = new_theme
+
+        with open("files/settings.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)

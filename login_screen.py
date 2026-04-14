@@ -2,7 +2,7 @@ import customtkinter as ctk
 import hashlib
 from main import enable_email_verification, generate_secure_code, find_user_by_email, send_email, update_password
 from login import login, register_user
-from all_styles import ENTRY_LABEL_STYLE, ENTRY_STYLE, MAIN_LABEL_STYLE, BUTTON_STYLE, BACK_BUTTON_STYLE
+from all_styles import ENTRY_LABEL_STYLE, ENTRY_STYLE, MAIN_LABEL_STYLE, BUTTON_STYLE, BACK_BUTTON_STYLE, ACCENT_COLOR
 
 class LoginFrame(ctk.CTkFrame):
     def __init__(self, master, app_manager):
@@ -23,14 +23,14 @@ class LoginFrame(ctk.CTkFrame):
         self.email_label = ctk.CTkLabel(self.container, text="Введіть електронну пошту", **ENTRY_LABEL_STYLE)
         self.email_label.pack(pady=(10, 0))
        
-        self.email_entry = ctk.CTkEntry(self.container, placeholder_text="Введіть ім'я користувача", **ENTRY_STYLE)
+        self.email_entry = ctk.CTkEntry(self.container, placeholder_text="example@gmail.com", **ENTRY_STYLE)
         self.email_entry.pack()
         enable_email_verification(self.email_entry)
        
         self.password_label = ctk.CTkLabel(self.container, text="Введіть пароль", **ENTRY_LABEL_STYLE)
         self.password_label.pack(pady=(10, 0))
        
-        self.password_entry = ctk.CTkEntry(self.container, placeholder_text="Введіть пароль", show="*", **ENTRY_STYLE)
+        self.password_entry = ctk.CTkEntry(self.container, placeholder_text="", show="*", **ENTRY_STYLE)
         self.password_entry.pack()
         
         self.show_password_checkbox = ctk.CTkCheckBox(self.container, text="Показати пароль", checkbox_height=20, checkbox_width=20, command=self.toogle_show_password)
@@ -39,11 +39,11 @@ class LoginFrame(ctk.CTkFrame):
         self.grid = ctk.CTkFrame(self.container, fg_color="transparent")
         self.grid.pack()
         
-        self.forget_password_label = ctk.CTkLabel(self.grid, width=150, text="Забули пароль?", text_color="blue")
+        self.forget_password_label = ctk.CTkLabel(self.grid, width=150, text="Забули пароль?", text_color=ACCENT_COLOR)
         self.forget_password_label.grid(row=0, column=0, pady=5, padx=20)
         self.forget_password_label.bind("<Button-1>", lambda e: self.app_manager.switch_frame(ForgetPasswordFrame))
 
-        self.registration_label = ctk.CTkLabel(self.grid, width=150, text="Немаєте аккаунта?", text_color="blue")
+        self.registration_label = ctk.CTkLabel(self.grid, width=150, text="Немаєте аккаунта?", text_color=ACCENT_COLOR)
         self.registration_label.grid(row=0, column=1, pady=5, padx=20)
         self.registration_label.bind("<Button-1>", lambda e: self.app_manager.switch_frame(RegistrationFrame))
 
@@ -91,13 +91,13 @@ class RegistrationFrame(ctk.CTkFrame):
         self.name_surname_label = ctk.CTkLabel(self.container, text="Прізвище та ім'я", **ENTRY_LABEL_STYLE)
         self.name_surname_label.pack()
 
-        self.name_surname_entry = ctk.CTkEntry(self.container, **ENTRY_STYLE)
+        self.name_surname_entry = ctk.CTkEntry(self.container, placeholder_text="Іванов Іван", **ENTRY_STYLE)
         self.name_surname_entry.pack()
 
         self.email_label = ctk.CTkLabel(self.container, text="Електронна пошта", **ENTRY_LABEL_STYLE)
         self.email_label.pack(pady=(10, 0))
 
-        self.email_entry = ctk.CTkEntry(self.container, **ENTRY_STYLE)
+        self.email_entry = ctk.CTkEntry(self.container, placeholder_text="example@gmail.com", **ENTRY_STYLE)
         self.email_entry.pack()
         enable_email_verification(self.email_entry)
         
@@ -107,14 +107,14 @@ class RegistrationFrame(ctk.CTkFrame):
         self.password_entry = ctk.CTkEntry(self.container, show="*", **ENTRY_STYLE)
         self.password_entry.pack()
         
-        self.show_password_checkbox = ctk.CTkCheckBox(self.container, text="Показати пароль", checkbox_height=20, checkbox_width=20, command=self.toogle_show_password)
-        self.show_password_checkbox.pack(anchor="w", pady=5, padx=0)
-
         self.password_again_label = ctk.CTkLabel(self.container, text="Повторіть пароль", **ENTRY_LABEL_STYLE)
         self.password_again_label.pack(pady=(10, 0))
 
         self.password_again_entry = ctk.CTkEntry(self.container, show="*", **ENTRY_STYLE)
-        self.password_again_entry.pack(pady=(0, 20))
+        self.password_again_entry.pack()
+
+        self.show_password_checkbox = ctk.CTkCheckBox(self.container, text="Показати пароль", checkbox_height=20, checkbox_width=20, command=self.toogle_show_password)
+        self.show_password_checkbox.pack(anchor="w", pady=(5, 20), padx=0)
         
         self.register_button = ctk.CTkButton(
             self.container,
@@ -175,9 +175,11 @@ class ForgetPasswordFrame(ctk.CTkFrame):
         self.error_label = ctk.CTkLabel(self.container, text="", text_color="red")
         self.error_label.pack()
 
+        self.email_label = ctk.CTkLabel(self.container, text="Введіть email", **ENTRY_LABEL_STYLE)
+        self.email_label.pack(pady=(20,0))
         # Етап 1
-        self.email_entry = ctk.CTkEntry(self.container, **ENTRY_STYLE)
-        self.email_entry.pack(pady=20)
+        self.email_entry = ctk.CTkEntry(self.container, placeholder_text="example@gmail.com", **ENTRY_STYLE)
+        self.email_entry.pack(pady=(0,20))
         enable_email_verification(self.email_entry)
         self.isVisible = True
         
@@ -185,10 +187,10 @@ class ForgetPasswordFrame(ctk.CTkFrame):
                                               text="Відправити код",
                                               command=lambda: self.process_step1(),
                                               **BUTTON_STYLE)
-        self.send_email_button.pack(pady=20)
+        self.send_email_button.pack(pady=(0,20))
 
         # Етап 2
-        self.code_entry = ctk.CTkEntry(self.container)
+        self.code_entry = ctk.CTkEntry(self.container, **ENTRY_STYLE)
         
         self.code_button = ctk.CTkButton(self.container, text="Підтвердити", command=lambda: self.process_step2(), **BUTTON_STYLE)
         
@@ -196,7 +198,7 @@ class ForgetPasswordFrame(ctk.CTkFrame):
         self.rewrite_email_label.bind("<Button-1>", lambda e: self.hide_email_screen())
         
         # Етап 3
-        self.new_password_entry = ctk.CTkEntry(self.container, show="*")
+        self.new_password_entry = ctk.CTkEntry(self.container, show="*", placeholder_text="********", **ENTRY_STYLE)
         self.commit_password_button = ctk.CTkButton(self.container, text="Змінити пароль", command=lambda: self.process_step3(), **BUTTON_STYLE)
         
     # Метод для кроку 1
@@ -208,12 +210,12 @@ class ForgetPasswordFrame(ctk.CTkFrame):
             
             send_email("Відновлення паролю в тестах", self.generated_code, self.user_email)
             
-            self.main_label.configure(text="Введіть код підтвердження")
+            self.email_label.configure(text="Введіть код з листа")
             self.email_entry.pack_forget()
             self.send_email_button.pack_forget()
             self.error_label.configure(text="")
 
-            self.code_entry.pack(pady=20)
+            self.code_entry.pack(pady=(0,20))
             self.code_button.pack(pady=(20, 0))
             self.rewrite_email_label.pack()
         else:
@@ -224,12 +226,13 @@ class ForgetPasswordFrame(ctk.CTkFrame):
     # Метод для кроку 2
     def process_step2(self):
         if self.code_entry.get() == self.generated_code:
+            self.email_label.configure(text="Введіть новий пароль")
             self.code_entry.pack_forget()
             self.code_button.pack_forget()
             self.rewrite_email_label.pack_forget()
             self.error_label.configure(text="")
 
-            self.new_password_entry.pack(pady=20)
+            self.new_password_entry.pack(pady=(0,20))
             self.commit_password_button.pack(pady=20)
         else:
             self.code_entry.configure(border_color="red")
