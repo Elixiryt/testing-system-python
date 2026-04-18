@@ -33,7 +33,7 @@ class App(ctk.CTk):
         settings_data = get_data("files/settings.json")
         
         if settings_data["isLogged"]:
-            print(f"Користувач {settings_data["userName"]} залогінений")
+            print(f"Користувач {settings_data[`userName`]} залогінений")
             self.switch_frame(MainFrame)
         else: 
             print("Користувач не залогінений")
