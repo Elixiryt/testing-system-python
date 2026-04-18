@@ -181,14 +181,14 @@ class TestingFrame(ctk.CTkFrame):
         self.app_manager = app_manager
         self.test_file = test_file
         
-        # 1. Створюємо словник для відповідей (КРИТИЧНО)
+        # Створюємо словник для відповідей (КРИТИЧНО)
         self.user_answers = {}
         
         self.test_data = self.load_test_data()
         self.questions = self.test_data.get("questions", [])
         self.current_question_index = 0
         
-        # 2. Запускаємо UI та Навігацію
+        # Запускаємо UI та Навігацію
         self.setup_ui()
         self.setup_navigation()
         self.display_question()
@@ -198,6 +198,7 @@ class TestingFrame(ctk.CTkFrame):
         with open(path, "r", encoding="utf-8") as file:
             return json.load(file)
 
+    # Метод для створення UI
     def setup_ui(self):
         self.header = ctk.CTkFrame(self, fg_color=FRAME_BG_COLOR, height=60)
         self.header.pack(fill="x", side="top")
@@ -222,6 +223,7 @@ class TestingFrame(ctk.CTkFrame):
         self.optins_container = ctk.CTkFrame(self.question_container, fg_color="transparent")
         self.optins_container.pack(fill="both", expand=True)
         
+    # Метод для збереження 
     def save_current_answer(self):
         # Зберігаємо те, що ввів/вибрав користувач
         q_data = self.questions[self.current_question_index]
@@ -233,6 +235,7 @@ class TestingFrame(ctk.CTkFrame):
         elif q_data["type"] == "text":
             self.user_answers[self.current_question_index] = self.answer_entry.get()
         
+    # Метод для показу питань
     def display_question(self):
         # Очищуємо старі віджети
         for child in self.optins_container.winfo_children():
@@ -268,6 +271,7 @@ class TestingFrame(ctk.CTkFrame):
             self.answer_entry.insert(0, saved_text)
             self.answer_entry.pack(pady=20)
 
+    # Метод для навігації
     def setup_navigation(self):
         self.footer = ctk.CTkFrame(self, fg_color=FRAME_BG_COLOR, height=70)
         self.footer.pack(side="bottom", fill="x")
@@ -283,6 +287,7 @@ class TestingFrame(ctk.CTkFrame):
         )
         self.next_question_button.pack(side="right", padx=40)
         
+    # Метод для показу наступного питання
     def next_question(self):
         self.save_current_answer()
         if self.current_question_index < len(self.questions) - 1:
@@ -291,12 +296,14 @@ class TestingFrame(ctk.CTkFrame):
         else:
             self.show_results()
 
+    # Метод для показу попереднього питання
     def previous_question(self):
         if self.current_question_index > 0:
             self.save_current_answer()
             self.current_question_index -= 1
             self.display_question()
 
+    # Метод для обчислення балу
     def calculate_score(self):
         total_score = 0
         for i, q in enumerate(self.questions):
@@ -322,8 +329,9 @@ class TestingFrame(ctk.CTkFrame):
                 
         return total_score
 
+    # Метод для показу результатів
     def show_results(self):
-        # 1. Повне очищення
+        # Повне очищення
         for child in self.question_container.winfo_children():
             child.destroy()
         if hasattr(self, "footer"):
@@ -337,7 +345,7 @@ class TestingFrame(ctk.CTkFrame):
         info = self.test_data.get("info", {})
         max_score = info.get("max_score", 12)
         
-        # 2. Математика результату
+        # Математика результату
         score_val = (final_score / total) * max_score
         percents = (final_score / total) * 100
         
@@ -357,7 +365,7 @@ class TestingFrame(ctk.CTkFrame):
             percentage=percents
         )
 
-        # 3. Вивід на екран
+        # Вивід на екран
         ctk.CTkLabel(self.question_container, text=f"{int(score_val)} / {max_score}", 
                      font=("Arial", 60, "bold"), text_color=result_color).pack(pady=(50, 10))
 
@@ -401,6 +409,7 @@ class HistoryFrame(ctk.CTkFrame):
 
         self.load_history_data()
 
+    # Метод для створення хедера таблиці
     def create_table_header(self):
         # Фрейм для заголовків стовпців (колір трохи світліший за фон)
         header_frame = ctk.CTkFrame(self, fg_color=FRAME_BG_COLOR, height=40)
@@ -419,6 +428,7 @@ class HistoryFrame(ctk.CTkFrame):
         ctk.CTkLabel(header_frame, text="Результат", font=("Arial", 14), text_color="gray").grid(row=0, column=2, sticky="w")
         ctk.CTkLabel(header_frame, text="Відсоток", font=("Arial", 14), text_color="gray").grid(row=0, column=3, sticky="w")
 
+    # Метод для заваниаження історії
     def load_history_data(self):
         if not os.path.exists("files/history.json"):
             ctk.CTkLabel(self.scroll_container, text="Історія порожня").pack(pady=20)
@@ -467,6 +477,7 @@ class ConstructorFrame(ctk.CTkFrame):
         self.setup_preview_panel()
         self.update_live_preview()
 
+    # Метод створення хедера
     def setup_header(self):
         self.header = ctk.CTkFrame(self, fg_color=FRAME_BG_COLOR, height=60)
         self.header.pack(side="top", fill="x")
@@ -482,6 +493,7 @@ class ConstructorFrame(ctk.CTkFrame):
         self.entry_max_score.pack(side="left")
         self.entry_max_score.bind("<KeyRelease>", self.validate_int)
 
+    # Метод створення футера
     def setup_footer(self):
         self.footer = ctk.CTkFrame(self, fg_color=FRAME_BG_COLOR, height=60)
         self.footer.pack(side="bottom", fill="x")
@@ -493,6 +505,7 @@ class ConstructorFrame(ctk.CTkFrame):
         self.cancel_button = ctk.CTkButton(self.footer, text="Скасувати", fg_color="#e74c3c", hover_color="#c0392b", command=lambda: self.app_manager.switch_frame(MainFrame), **BUTTON_STYLE_WITHOUT_COLOR)
         self.cancel_button.pack(side="right", padx=10)
 
+    # Метод створення панелі зміни
     def setup_editor_panel(self):
         self.editor_panel = ctk.CTkScrollableFrame(self.main_container, fg_color=FRAME_BG_COLOR, corner_radius=10)
         self.editor_panel.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
@@ -522,6 +535,7 @@ class ConstructorFrame(ctk.CTkFrame):
         self.add_btn = ctk.CTkButton(self.editor_panel, text="Додати питання", command=self.add_question_to_list, **BUTTON_STYLE)
         self.add_btn.pack(pady=20)
 
+    # Метод створення прев'ю
     def setup_preview_panel(self):
         self.preview_panel = ctk.CTkFrame(self.main_container, fg_color=FRAME_BG_COLOR, corner_radius=10)
         self.preview_panel.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
@@ -534,6 +548,7 @@ class ConstructorFrame(ctk.CTkFrame):
         self.preview_options_container = ctk.CTkFrame(self.preview_panel, fg_color="transparent")
         self.preview_options_container.pack(fill="both", expand=True)
 
+    # Метод оновлення прев'ю
     def update_live_preview(self):
         for child in self.preview_options_container.winfo_children():
             child.destroy()
@@ -562,6 +577,7 @@ class ConstructorFrame(ctk.CTkFrame):
             entry.configure(state="disabled")
             entry.pack(pady=20)
 
+    # Метод додавання питання до списку
     def add_question_to_list(self):
         q_text = self.entry_q_text.get().strip()
         q_type = self.type_var.get()
@@ -586,6 +602,7 @@ class ConstructorFrame(ctk.CTkFrame):
         self.entry_options.delete(0, 'end')
         self.entry_correct.delete(0, 'end')
 
+    # Метод збереження в файл
     def save_test_to_file(self):
         title = self.entry_title.get().strip() or "unnamed_test"
         en_max = self.entry_max_score.get()
@@ -612,6 +629,7 @@ class ConstructorFrame(ctk.CTkFrame):
         
         self.app_manager.switch_frame(MainFrame)
         
+    # Метод валідації цифр для ентрі максимального балу
     def validate_int(self, event):
         current_value = self.entry_max_score.get()
 
@@ -620,6 +638,7 @@ class ConstructorFrame(ctk.CTkFrame):
         else:
             self.entry_max_score.configure(border_color="red")
             
+    # Метод для ховання варіантів коли вибрано "текст"
     def on_type_change(self, choice):
         if choice == "text":
             self.label_options.pack_forget()
@@ -684,7 +703,7 @@ class SettingsFrame(ctk.CTkFrame):
         ctk.set_appearance_mode(new_theme)
 
         data= get_data("files/settings.json")
-        data["darkMode"] = new_theme
+        data["theme"] = new_theme
 
         with open("files/settings.json", "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
