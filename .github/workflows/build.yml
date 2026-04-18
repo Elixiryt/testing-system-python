@@ -1,0 +1,33 @@
+name: Build EXE for Windows
+
+on: [push] # Збірка запускатиметься щоразу, коли ви оновлюєте код
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10' # Вкажіть вашу версію Python
+
+    - name: Install PyInstaller
+      run: pip install pyinstaller
+
+    - name: Install dependencies
+      run: |
+        if (Test-Path requirements.txt) { pip install -r requirements.txt }
+        # Якщо у вас є інші бібліотеки, додайте їх тут, наприклад: pip install requests
+
+    - name: Build with PyInstaller
+      run: pyinstaller --onefile index.py
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Windows-Executable
+        path: dist/index.exe
