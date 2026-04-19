@@ -23,7 +23,7 @@ jobs:
         if (Test-Path requirements.txt) { pip install -r requirements.txt }
 
     - name: Build with PyInstaller
-      run: pyinstaller --onefile --windowed --add-data "*.py;." index.py
+      run: pyinstaller --onefile --windowed --add-data "*.json;." index.py
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4 # Оновлено до v4 (це виправить помилку)
