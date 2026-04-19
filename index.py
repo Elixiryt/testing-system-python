@@ -1,3 +1,12 @@
+import sys
+import os
+
+# Цей блок каже програмі шукати модулі всередині тимчасової папки EXE
+if getattr(sys, 'frozen', False):
+    basedir = sys._MEIPASS
+    if basedir not in sys.path:
+        sys.path.insert(0, basedir)
+
 from main_screen import MainFrame
 from login_screen import LoginFrame
 from core import get_data

@@ -3,3 +3,4 @@ __pycache__/
 .vscode/
 .tests/
 .test_frames_styles.py
+__pycache__/login.cpython-314.pyc
