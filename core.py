@@ -1,9 +1,19 @@
-import re, random, string, json, os, hashlib, smtplib
+import re, random, string, json, os, hashlib, smtplib, sys
 from email.message import EmailMessage
 from datetime import datetime
 
-file_path = "tests/question.json"
-login_file = "files/logins.json"
+def resource_path(relative_path):
+    """ Отримує абсолютний шлях до ресурсів, працює для розробки та для PyInstaller """
+    try:
+        # PyInstaller створює тимчасову папку і зберігає шлях у _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+file_path = resource_path("tests/question.json")
+login_file = resource_path("files/logins.json")
     
 # Метод отримання даних з файлу
 def get_data(new_file):
