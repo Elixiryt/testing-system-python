@@ -145,7 +145,7 @@ def set_latest_attempt():
     data = data_all[-1]
 
     if data:
-        return f"Остання спроба: {data["test"]} - {data["score"]}({data["percentage"]})"
+        return f"Остання спроба: {data['test']} - {data['score']}({data['percentage']})"
     else:
         return "Ви ще не проходили тест"
     
