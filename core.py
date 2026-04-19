@@ -8,11 +8,15 @@ login_file = "files/logins.json"
 # Метод отримання даних з файлу
 def get_data(new_file):
     if not os.path.exists(new_file) or os.path.getsize(new_file) == 0:
+        print(f"Завантажено файл {new_file} із даними {[]}")
         return []
     with open(new_file, "r", encoding="utf-8") as file:
         try:
-            return json.load(file)
+            data = json.load(file)
+            print(f"Завантажено файл {new_file} із даними {data}")
+            return data
         except json.JSONDecodeError:
+            print(f"Пошкоджено файл {new_file}")
             return []
     
 #  Метод для перевірки на email
