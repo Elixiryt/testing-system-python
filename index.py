@@ -1,6 +1,6 @@
 from main_screen import MainFrame
 from login_screen import LoginFrame
-from main import get_data
+from core import get_data
 import customtkinter as ctk
 
 class App(ctk.CTk):
@@ -14,7 +14,7 @@ class App(ctk.CTk):
         self.current_frame = None
         
         settings_data=get_data("files/settings.json")
-        ctk.set_appearance_mode(settings_data["darkMode"])
+        ctk.set_appearance_mode(settings_data["theme"])
         
         self.check_auth()
 

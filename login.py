@@ -1,4 +1,4 @@
-from main import get_data
+from core import get_data
 import hashlib
 import json
 

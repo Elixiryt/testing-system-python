@@ -1,6 +1,6 @@
 import customtkinter as ctk
 import hashlib
-from main import enable_email_verification, generate_secure_code, find_user_by_email, send_email, update_password
+from core import enable_email_verification, generate_secure_code, find_user_by_email, send_email, update_password
 from login import login, register_user
 from all_styles import ENTRY_LABEL_STYLE, ENTRY_STYLE, MAIN_LABEL_STYLE, BUTTON_STYLE, BACK_BUTTON_STYLE, ACCENT_COLOR
 

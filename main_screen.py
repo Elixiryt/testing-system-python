@@ -2,7 +2,7 @@ import customtkinter as ctk
 import os, json
 from all_styles import MAIN_LABEL_STYLE, BORDER_COLOR, FRAME_BG_COLOR, BACK_BUTTON_STYLE, BUTTON_STYLE, HEADER_STYLE, BG_COLOR, TEXT_SECONDARY, TABLE_SECONDARY, BUTTON_STYLE_WITHOUT_COLOR
 from login import get_data
-from main import get_test_files, get_test_metadata, save_history, set_latest_attempt, get_hash
+from core import get_test_files, get_test_metadata, save_history, set_latest_attempt, get_hash
 
 settings_data = get_data("files/settings.json")
 
