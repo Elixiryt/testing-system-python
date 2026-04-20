@@ -1,6 +1,6 @@
 import customtkinter as ctk
-import hashlib
-from core import enable_email_verification, generate_secure_code, find_user_by_email, send_email, update_password
+import json
+from core import enable_email_verification, generate_secure_code, find_user_by_email, send_email, update_password, get_data, resource_path
 from login import login, register_user
 from all_styles import ENTRY_LABEL_STYLE, ENTRY_STYLE, MAIN_LABEL_STYLE, BUTTON_STYLE, BACK_BUTTON_STYLE, ACCENT_COLOR
 
@@ -53,6 +53,10 @@ class LoginFrame(ctk.CTkFrame):
                                           **BUTTON_STYLE)
         self.login_button.pack(pady=10)
         
+        self.guest_label = ctk.CTkLabel(self.container, text="Увійти як гість", text_color="gray")
+        self.guest_label.pack()
+        self.guest_label.bind("<Button-1>", lambda e: self.login_as_guest())
+        
     def toogle_show_password(self):
         if self.show_password_checkbox.get() == 1:
             self.password_entry.configure(show="")
@@ -68,6 +72,18 @@ class LoginFrame(ctk.CTkFrame):
             self.email_entry.configure(border_color="red")
             self.error_label.configure(text="Неправильний пароль або ел. адреса")
             print("Користувач не залогінений")
+            
+    def login_as_guest(self):
+        settings_file = resource_path("files/settings.json")
+        from main_screen import MainFrame
+        self.app_manager.switch_frame(MainFrame)
+        
+        data = get_data(settings_file)
+        data["isLogged"] = True
+        data["userName"] = "Гість"
+        
+        with open(settings_file, "w", encoding="utf-8") as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
 
 class RegistrationFrame(ctk.CTkFrame):
     def __init__(self, master, app_manager):

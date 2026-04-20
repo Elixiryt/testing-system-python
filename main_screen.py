@@ -584,20 +584,26 @@ class ConstructorFrame(ctk.CTkFrame):
         correct = self.entry_correct.get().strip()
 
         if q_type == "checkbox":
-            list_correct = [c.strip().lower() for c in correct.split(",")]
+            separator = ";" if ";" in correct else ","
+            
+            list_correct = [
+                c.strip().lower().replace(',', '.') 
+                for c in correct.split(separator) if c.strip()
+            ]
             hashed_answer = get_hash("".join(sorted(list_correct)))
         else:
-            # Для radio та text
-            hashed_answer = get_hash(correct.lower())
+            normalized_correct = correct.lower().replace(',', '.')
+            hashed_answer = get_hash(normalized_correct)
 
         question_data = {
             "type": q_type,
             "question": q_text,
             "options": [opt.strip() for opt in self.entry_options.get().split(",")],
-            "answer": hashed_answer # Зберігаємо вже готовий хеш
+            "answer": hashed_answer 
         }
         self.questions_list.append(question_data)
-        
+    
+        # Очищення полів
         self.entry_q_text.delete(0, 'end')
         self.entry_options.delete(0, 'end')
         self.entry_correct.delete(0, 'end')

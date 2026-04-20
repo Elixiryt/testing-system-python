@@ -1,0 +1,39 @@
+{
+    "info": {
+        "title": "Математика 2 клас",
+        "creator": "Ілля Снітко",
+        "max_score": 100
+    },
+    "questions": [
+        {
+            "type": "radio",
+            "question": "5+5",
+            "options": [
+                "7",
+                "8",
+                "12",
+                "10"
+            ],
+            "answer": "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5"
+        },
+        {
+            "type": "checkbox",
+            "question": "корінь з 25",
+            "options": [
+                "5",
+                "-5",
+                "4",
+                "5 i -5"
+            ],
+            "answer": "26674dfe1e8147e4ee14c1843c1dea097c527babf7e16a74c35aca8b3f29470c"
+        },
+        {
+            "type": "text",
+            "question": "як звати мою собаку?",
+            "options": [
+                ""
+            ],
+            "answer": "4835cf8864d25f5208246f8f763e59838aa3ace13f0a2ca195e964dae7ab6145"
+        }
+    ]
+}

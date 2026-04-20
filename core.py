@@ -14,6 +14,7 @@ def resource_path(relative_path):
 
 file_path = resource_path("tests/question.json")
 login_file = resource_path("files/logins.json")
+settings_file = resource_path("files/settings.json")
     
 # Метод отримання даних з файлу
 def get_data(new_file):
@@ -164,4 +165,4 @@ def set_latest_attempt():
         return "Ви ще не проходили тест"
     
 def get_hash(data):
-    return hashlib.sha256(data.encode()).hexdigest()
+    return hashlib.sha256(data.encode()).hexdigest()    

@@ -1,20 +1,20 @@
 {
     "info": {
-        "title": "Математика",
+        "title": "unnamed_test",
         "creator": "Ілля Снітко",
         "max_score": 12
     },
     "questions": [
         {
             "type": "checkbox",
-            "question": "|2|",
+            "question": "hgg/ghh",
             "options": [
-                "2",
-                "-2",
-                "1",
-                "-1"
+                "ytiors",
+                "hgarie",
+                "hgg",
+                "ghh"
             ],
-            "answer": "33f88a451fd4154fa54953c60636b671cf82ce1228f40c8692e1d985912155ac"
+            "answer": "5184c46352a3e034e8e0b6744f250e18d1728e21db74e259f98aa1bee12ef834"
         }
     ]
 }
