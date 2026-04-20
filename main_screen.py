@@ -568,7 +568,7 @@ class ConstructorFrame(ctk.CTkFrame):
             for opt in options:
                 ctk.CTkRadioButton(self.preview_options_container, text=opt).pack(pady=5, anchor="w", padx=60)
         elif q_type == "checkbox":
-            self.entry_correct.configure(placeholder_text="Відповідь, відповідь...")
+            self.entry_correct.configure(placeholder_text="Відповідь; відповідь...")
             for opt in options:
                 ctk.CTkCheckBox(self.preview_options_container, text=opt).pack(pady=5, anchor="w", padx=60)
         elif q_type == "text":
